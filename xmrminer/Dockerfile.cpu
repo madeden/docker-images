@@ -1,0 +1,19 @@
+FROM ubuntu:16.04
+
+RUN apt update && \
+    apt upgrade -yqq && \
+    apt install -yqq --no-install-recommends ca-certificates git libmicrohttpd-dev libssl-dev cmake cmake-curses-gui build-essential clang && \
+    apt clean 
+
+RUN cd /tmp && \
+    git clone https://github.com/fireice-uk/xmr-stak-cpu.git src && \
+    cd src && \
+    cmake . -DCMAKE_INSTALL_PREFIX=/usr && \
+    make install 
+
+ADD config.cpu /config/config.txt
+
+WORKDIR /config
+
+CMD [ "/usr/bin/xmr-stak-cpu" ]
+

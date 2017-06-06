@@ -1,0 +1,19 @@
+global:
+  imagePullPolicy: IfNotPresent
+
+moneroCluster:
+  service:
+    name: xmr-cgpu
+  image: 
+    repo: samnco
+    name: minergate
+    dockerTag: latest
+  settings:
+    clusterName: xmrgpu
+    pool: minergate
+    coin: "-xmr"
+    nodes: 3
+    workersPerNode: 2
+    cpusPerWorker: 1
+    gpuComplexity: 2
+    username: samnco@gmail.com

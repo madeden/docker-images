@@ -1,0 +1,22 @@
+FROM nvidia/cuda:8.0-devel
+
+ENV CC=/usr/bin/clang
+ENV CXX=/usr/bin/clang++
+
+RUN apt update && \
+    apt upgrade -yqq && \
+    apt install -yqq --no-install-recommends ca-certificates git libmicrohttpd-dev libssl-dev cmake cmake-curses-gui build-essential clang && \
+    apt clean
+
+RUN cd /tmp && \
+    git clone https://github.com/fireice-uk/xmr-stak-nvidia.git src && \
+    cd src && \
+    cmake . -DCMAKE_INSTALL_PREFIX=/usr && \
+    make install
+
+ADD config.nvidia /config/config.txt
+
+WORKDIR /config
+
+CMD [ "/usr/bin/xmr-stak-nvidia" ]
+
