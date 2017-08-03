@@ -82,10 +82,16 @@ RUN apt update && apt upgrade -yqq && \
 
 # 9.1: "https://drive.google.com/uc?export=download&id=0B69wv2iqszefbzd0Ylg2SHhOMVE"
 # 9.5
-RUN wget -O claymore.tgz "https://drive.google.com/uc?export=download&id=0B69wv2iqszefWU5kREUzN2VaOE0" && \
-	tar xfz claymore.tgz && \
-	mv Claymore\'s\ Dual\ Ethereum+Decred_Siacoin_Lbry_Pascal\ AMD+NVIDIA\ GPU\ Miner\ v9.5\ -\ LINUX /claymore && \
-	rm -f claymore.tgz
+#RUN wget -O claymore.tgz "https://drive.google.com/uc?export=download&id=0B69wv2iqszefWU5kREUzN2VaOE0" && \
+#	tar xfz claymore.tgz && \
+#	mv Claymore\'s\ Dual\ Ethereum+Decred_Siacoin_Lbry_Pascal\ AMD+NVIDIA\ GPU\ Miner\ v9.5\ -\ LINUX /claymore && \
+#	rm -f claymore.tgz
+# 9.7 
+RUN mkdir /claymore && \
+  cd /claymore && \
+  wget -O claymore.tgz https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v9.7/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal.AMD.NVIDIA.GPU.Miner.v9.7.-.LINUX.tar.gz && \
+  tar xfz claymore.tgz && \
+  rm -f claymore.tgz
 
 WORKDIR /
 

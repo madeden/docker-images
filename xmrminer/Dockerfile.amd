@@ -18,12 +18,12 @@ RUN apt update && apt upgrade -yqq && \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY amdgpu-pro-17.10-414273.tar.xz /tmp/amdgpu-pro-17.10-414273.tar.xz
+COPY amdgpu-pro-17.30-458935.tar.xz /tmp/amdgpu-pro-17.30-458935.tar.xz
 
 RUN cd /tmp && \
-    tar -Jxvf amdgpu-pro-17.10-414273.tar.xz && \
-    rm -f amdgpu-pro-17.10-414273.tar.xz && \
-    cd amdgpu-pro-17.10-414273 && \
+    tar -Jxvf amdgpu-pro-17.30-458935.tar.xz && \
+    rm -f amdgpu-pro-17.30-458935.tar.xz && \
+    cd amdgpu-pro-17.30-458935 && \
     ./amdgpu-pro-install -y --compute
 
 COPY AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2 /tmp/AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2

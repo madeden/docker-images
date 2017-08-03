@@ -14,12 +14,12 @@ RUN apt update && apt upgrade -yqq && \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY amdgpu-pro-17.10-414273.tar.xz /tmp/amdgpu-pro-17.10-414273.tar.xz
+COPY amdgpu-pro-17.30-458935.tar.xz /tmp/amdgpu-pro-17.30-458935.tar.xz
 
 RUN cd /tmp && \
-    tar -Jxvf amdgpu-pro-17.10-414273.tar.xz && \
-    rm -f amdgpu-pro-17.10-414273.tar.xz && \
-    cd amdgpu-pro-17.10-414273 && \
+    tar -Jxvf amdgpu-pro-17.30-458935.tar.xz && \
+    rm -f amdgpu-pro-17.30-458935.tar.xz && \
+    cd amdgpu-pro-17.30-458935 && \
     ./amdgpu-pro-install -y --compute
 
 COPY AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2 /tmp/AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
@@ -114,9 +114,15 @@ ENV DCRI="30"
 
 # 9.1: "https://drive.google.com/uc?export=download&id=0B69wv2iqszefbzd0Ylg2SHhOMVE"
 # 9.5
-RUN wget -O claymore.tgz "https://drive.google.com/uc?export=download&id=0B69wv2iqszefWU5kREUzN2VaOE0" && \
+#RUN wget -O claymore.tgz "https://drive.google.com/uc?export=download&id=0B69wv2iqszefWU5kREUzN2VaOE0" && \
+#  tar xfz claymore.tgz && \
+#  mv Claymore\'s\ Dual\ Ethereum+Decred_Siacoin_Lbry_Pascal\ AMD+NVIDIA\ GPU\ Miner\ v9.5\ -\ LINUX /claymore && \
+#  rm -f claymore.tgz
+# 9.7 
+RUN mkdir /claymore && \
+  cd /claymore && \
+  wget -O claymore.tgz https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v9.7/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal.AMD.NVIDIA.GPU.Miner.v9.7.-.LINUX.tar.gz && \
   tar xfz claymore.tgz && \
-  mv Claymore\'s\ Dual\ Ethereum+Decred_Siacoin_Lbry_Pascal\ AMD+NVIDIA\ GPU\ Miner\ v9.5\ -\ LINUX /claymore && \
   rm -f claymore.tgz
 
 ENV PATH "$PATH:/opt/amdgpupro/bin:/opt/AMDAPPSDK-3.0/bin/"

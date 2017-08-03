@@ -11,5 +11,5 @@ docker run -it \
   --device /dev/nvidia0:/dev/nvidia0 \
   --device /dev/nvidiactl:/dev/nvidiactl \
   --device /dev/nvidia-uvm:/dev/nvidia-uvm \
-  samnco/claymore-miner:9.5-nvidia \
+  samnco/claymore-miner:9.7-nvidia \
   /entrypoint.sh

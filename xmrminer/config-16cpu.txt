@@ -18,7 +18,7 @@
 ],
 "pool_address" : "xmr-eu.dwarfpool.com:8050",
 "wallet_address" : "4GdoN7NCTi8a5gZug7PrwZNKjvHFmKeV11L6pNJPgj5QNEHsN6eeX3DaAQFwZ1ufD4LYCZKArktt113W7QjWvQ7CW9YZRapBW6vAuZ73md",
-"pool_password" : "cpu",
+"pool_password" : "cpu-desktop",
 "use_slow_memory" : "warn",
 "nicehash_nonce" : false,
 "use_tls" : false,
