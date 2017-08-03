@@ -1,5 +1,7 @@
 FROM ubuntu:16.04
 
+ENV VERSION=amd
+
 RUN apt update && apt upgrade -yqq && \
     apt install -yqq --no-install-recommends \
       ocl-icd-opencl-dev \
@@ -9,8 +11,12 @@ RUN apt update && apt upgrade -yqq && \
       git \
       wget \
       ca-certificates \
-      build-essential && \
-    apt clean
+      build-essential \
+      xz-utils \
+      bzip2 \
+      lsb-release \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY amdgpu-pro-17.10-414273.tar.xz /tmp/amdgpu-pro-17.10-414273.tar.xz
 
@@ -42,11 +48,12 @@ RUN cd / && \
 ADD config.amd /config/config.txt
 ADD config.amd /xmr-stak-amd/config.txt
 ADD entrypoint.sh /usr/bin/xmr-stak-amd
+ADD sigint.sh /usr/bin/xmr-stak-sigint
 
-WORKDIR /xmr-stak-amd
+WORKDIR /config
 
 ENV PATH "$PATH:/opt/amdgpupro/bin:/opt/AMDAPPSDK-3.0/bin/"
 ENV LD_LIBRARY_PATH "$LD_LIBRARY_PATH:/opt/amdgpu-pro/lib:/usr/lib/x86_64-linux-gnu"
 
-CMD [ "sh -c ./entrypoint.sh" ]
+CMD [ "/usr/bin/xmr-stak-amd" ]
 

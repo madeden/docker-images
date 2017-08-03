@@ -1,9 +1,12 @@
 FROM ubuntu:16.04
 
+ENV VERSION=cpu
+
 RUN apt update && \
     apt upgrade -yqq && \
     apt install -yqq --no-install-recommends ca-certificates git libmicrohttpd-dev libssl-dev cmake cmake-curses-gui build-essential clang && \
-    apt clean 
+    apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
 RUN cd /tmp && \
     git clone https://github.com/fireice-uk/xmr-stak-cpu.git src && \
@@ -12,6 +15,7 @@ RUN cd /tmp && \
     make install 
 
 ADD config.cpu /config/config.txt
+ADD sigint.sh /usr/bin/xmr-stak-sigint
 
 WORKDIR /config
 
