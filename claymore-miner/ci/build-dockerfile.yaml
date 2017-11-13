@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: projectatomic/dockerfile-lint
+    tag: 'latest'
+
+inputs:
+- name: docker-images/claymore-miner
+
+run:
+  path: docker-images/claymore-miner/ci/lint-dockerfile.sh

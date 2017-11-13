@@ -2,7 +2,7 @@
   { "index" : 0, "threads" : 38, "blocks" : 26, "bfactor" : 6, "bsleep" :  25, "affine_to_cpu" : false},
   { "index" : 1, "threads" : 38, "blocks" : 26, "bfactor" : 6, "bsleep" :  25, "affine_to_cpu" : false},
  ],
-"pool_address" : "xmr-eu.dwarfpool.com:8050",
+"pool_address" : "pool.supportxmr.com:5555",
 "wallet_address" : "4GdoN7NCTi8a5gZug7PrwZNKjvHFmKeV11L6pNJPgj5QNEHsN6eeX3DaAQFwZ1ufD4LYCZKArktt113W7QjWvQ7CW9YZRapBW6vAuZ73md",
 "pool_password" : "x",
 "use_tls" : false,

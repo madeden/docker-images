@@ -1,0 +1,14 @@
+resources: 
+  - name: docker-images
+    type: git 
+    source: 
+      uri: https://github.com/madeden/docker-images
+
+job: 
+  - name: claymore-miner
+    public: true
+    plan: 
+    - get: docker-images
+    - task: lint-claymore-miner
+      file: docker-images/claymore-miner/ci/lint-dockerfile.yaml
+

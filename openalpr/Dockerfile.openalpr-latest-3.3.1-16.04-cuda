@@ -1,0 +1,60 @@
+FROM samnco/opencv:3.3.1-16.04-cuda
+
+MAINTAINER Samuel Cozannet <samuel.cozannet@madeden.com>
+
+ENV OPENCV_VERSION=3.3.1
+ENV OPENALPR_VERSION=latest-cuda
+
+
+run apt update && apt install -yqq --no-install-recommends \
+    build-essential \
+    cmake \
+    curl \
+    git \
+    libcurl3-dev \
+    libleptonica-dev \
+    liblog4cplus-dev \
+    libtesseract-dev \
+    wget \
+    && apt clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/local/src/openalpr/
+COPY CMakeLists.${OPENALPR_VERSION}-${OPENCV_VERSION} ./CMakeLists.txt
+RUN ln -s /usr/local/cuda/lib64/libcudart.so /usr/lib/libopencv_dep_cudart.so &&\
+	git clone https://github.com/madeden/openalpr.git && \
+	cd openalpr && \
+	git checkout enforce-cuda && \
+	mv ../CMakeLists.txt ./src/ 	&& \
+	cd /usr/local/src/openalpr/openalpr/src && \
+	cmake -DWITH_GPU_DETECTOR=1 \
+		-DCOMPILE_GPU=1 \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWITH_TESTS=0 \
+		-DWITH_BINDING_JAVA=0 \
+		-DWITH_BINDING_PYTHON=0 \
+		-DWITH_BINDING_GO=0 && \
+	make && \
+	make install && \
+	cd / && \
+	rm -rf /usr/local/src/openalpr/
+
+RUN apt autoremove -y --purge \
+	cmake \
+	build-essential \
+	curl \
+	pkg-config \
+	cmake-data \
+	g++ \
+	g++-5 \
+	libarchive13 \
+	libjsoncpp1 \
+	libstdc++-5-dev && \
+	apt autoremove --purge -y 
+
+WORKDIR /
+
+CMD [ "alpr", "--help" ]
+
+
+
+

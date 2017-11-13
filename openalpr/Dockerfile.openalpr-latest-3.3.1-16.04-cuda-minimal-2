@@ -1,0 +1,25 @@
+FROM samnco/openalpr:latest-3.3.1-16.04-cuda
+MAINTAINER Samuel Cozannet <samuel.cozannet@madeden.com>
+
+ENV OPENCV_VERSION="3.3.1"
+ENV OPENALPR_VERSION=latest-cuda
+
+WORKDIR /
+
+RUN apt -y update && \
+	apt install -yqq --no-install-recommends \
+		libgtk2.0 && \
+		apt clean && \
+		rm -rf /var/lib/apt/lists/* && \
+	rm -rf /usr/local/src/openalpr/ && \
+	rm -rf /opt/opencv
+
+RUN apt autoremove -y --purge \
+	python-setuptools \
+	python-pip \
+	cmake \
+	build-essential \
+	pkg-config && \
+	apt autoremove --purge -y 
+
+CMD [ "alpr", "--help" ]

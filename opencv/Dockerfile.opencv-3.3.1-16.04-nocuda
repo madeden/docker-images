@@ -1,0 +1,83 @@
+FROM ubuntu:16.04
+MAINTAINER Samuel Cozannet <samuel.cozannet@madeden.com>
+
+ENV OPENCV_TAG="3.3.1"
+
+RUN apt -y update && \
+	apt install -yqq --no-install-recommends \
+		python-pip \
+		python-setuptools \
+		git-core \
+		libeigen3-dev \
+		build-essential \
+		cmake \
+		libgtk2.0 \
+		libgtk2.0-dev \
+		pkg-config \
+		libavcodec-dev \
+		libavformat-dev \
+		libswscale-dev \
+		python-dev \
+		python-numpy \
+		libtbb2 \
+		libtbb-dev \
+		libjpeg-dev \
+		libpng-dev \
+		libtiff-dev \
+		libjasper-dev \
+		libdc1394-22-dev \
+		ocl-icd-opencl-dev \
+		uuid-dev \
+		zlib1g-dev \
+		libcanberra-gtk3-module && \
+		apt clean && \
+		rm -rf /var/lib/apt/lists/* && \
+		pip install matplotlib 
+
+RUN git clone https://github.com/Itseez/opencv.git /opt/opencv && \
+    cd /opt/opencv && \
+    git checkout ${OPENCV_TAG} && \
+    cd .. && \
+    mkdir -p /opt/opencv/build
+
+WORKDIR /opt/opencv/build
+RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
+	-D CMAKE_INSTALL_PREFIX=/usr/local \
+	-D BUILD_opencv_java=OFF \
+	-D WITH_OPENGL=ON \
+	-D ENABLE_FAST_MATH=1 \
+	-D CUDA_FAST_MATH=0 \
+	-D WITH_CUBLAS=0 \      
+	-D WITH_CUDA=OFF \
+	-D WITH_NVCUVID=OFF \
+	-D WITH_CUFFT=OFF \
+	-D WITH_EIGEN=ON \
+	-D WITH_IPP=ON \
+	-D CUDA_NVCC_FLAGS="-D_FORCE_INLINES" \
+	-D WITH_TBB=OFF \
+	-D BUILD_opencv_world=OFF \
+	-D BUILD_opencv_python2=ON \
+	-D BUILD_opencv_python3=OFF \
+	-D INSTALL_PYTHON_EXAMPLES=OFF \
+	-D BUILD_PERF_TESTS=OFF \
+	-D BUILD_TESTS=OFF \
+	-D WITH_V4L=ON \
+	.. && \
+	make -j8 && \
+	make install && \
+	ldconfig && \
+	cd / && \
+	rm -rf /opt/opencv
+
+RUN apt autoremove -yqq --purge \
+	cmake \
+	python-setuptools \
+	build-essential \
+	pkg-config \
+	python-pip && \
+	apt autoremove -yqq --purge
+
+WORKDIR /
+
+# Notes: 
+## https://gist.github.com/filitchp/5645d5eebfefe374218fa2cbf89189aa
