@@ -1,5 +1,9 @@
 FROM ubuntu:16.04
 
+ENV AMD_DRIVER=amdgpu-pro-17.50-511655
+ENV AMD_APP_SDK=AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64
+ENV ARCHIVE_URL=https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v10.0/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal.AMD.NVIDIA.GPU.Miner.v10.0.-.LINUX.tar.gz
+
 RUN apt update && apt upgrade -yqq && \
   apt install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages --no-install-recommends \
       apt-transport-https \
@@ -14,18 +18,18 @@ RUN apt update && apt upgrade -yqq && \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY amdgpu-pro-17.30-458935.tar.xz /tmp/amdgpu-pro-17.30-458935.tar.xz
+COPY ${AMD_DRIVER}.tar.xz /tmp/${AMD_DRIVER}.tar.xz
 
 RUN cd /tmp && \
-    tar -Jxvf amdgpu-pro-17.30-458935.tar.xz && \
-    rm -f amdgpu-pro-17.30-458935.tar.xz && \
-    cd amdgpu-pro-17.30-458935 && \
+    tar -Jxvf ${AMD_DRIVER}.tar.xz && \
+    rm -f ${AMD_DRIVER}.tar.xz && \
+    cd ${AMD_DRIVER} && \
     ./amdgpu-pro-install -y --compute
 
-COPY AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2 /tmp/AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
+COPY ${AMD_APP_SDK}.tar.bz2 /tmp/${AMD_APP_SDK}.tar.bz2
 
 RUN cd /tmp && \
-    tar -xvf AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2 && \
+    tar -xvf ${AMD_APP_SDK}.tar.bz2 && \
     rm AMD-APP-SDK*.tar.bz2 && \
     ./AMD-APP-SDK-*.sh -- --acceptEULA 'yes' -s && \
     rm AMD-APP-SDK-*.sh && \
@@ -112,16 +116,9 @@ ENV DCOIN="dcr"
 #   For example, by default (-dcri 30) 390 card shows 29MH/s for Ethereum and 440MH/s for Decred. Setting -dcri 70 causes 24MH/s for Ethereum and 850MH/s for Decred.
 ENV DCRI="30"
 
-# 9.1: "https://drive.google.com/uc?export=download&id=0B69wv2iqszefbzd0Ylg2SHhOMVE"
-# 9.5
-#RUN wget -O claymore.tgz "https://drive.google.com/uc?export=download&id=0B69wv2iqszefWU5kREUzN2VaOE0" && \
-#  tar xfz claymore.tgz && \
-#  mv Claymore\'s\ Dual\ Ethereum+Decred_Siacoin_Lbry_Pascal\ AMD+NVIDIA\ GPU\ Miner\ v9.5\ -\ LINUX /claymore && \
-#  rm -f claymore.tgz
-# 9.7 
 RUN mkdir /claymore && \
   cd /claymore && \
-  wget -O claymore.tgz https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v9.7/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal.AMD.NVIDIA.GPU.Miner.v9.7.-.LINUX.tar.gz && \
+  wget -O claymore.tgz ${ARCHIVE_URL} && \
   tar xfz claymore.tgz && \
   rm -f claymore.tgz
 
@@ -130,7 +127,7 @@ ENV LD_LIBRARY_PATH "$LD_LIBRARY_PATH:/opt/amdgpu-pro/lib:/usr/lib/x86_64-linux-
 
 WORKDIR /
 
-ADD entrypoint.sh.amd entrypoint.sh
+ADD entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 # CMD [ "/entrypoint.sh" ]

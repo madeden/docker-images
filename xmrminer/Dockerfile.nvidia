@@ -1,25 +1,28 @@
-FROM nvidia/cuda:8.0-devel
+# Latest version of ubuntu
+FROM nvidia/cuda:9.0-base
 
-ENV CC=/usr/bin/clang
-ENV CXX=/usr/bin/clang++
-ENV VERSION=nvidia
+# Default git repository
+ENV GIT_REPOSITORY https://github.com/fireice-uk/xmr-stak.git
+ENV XMRSTAK_CMAKE_FLAGS -DXMR-STAK_COMPILE=generic -DCUDA_ENABLE=ON -DOpenCL_ENABLE=OFF
 
-RUN apt update && \
-    apt upgrade -yqq && \
-    apt install -yqq --no-install-recommends ca-certificates git libmicrohttpd-dev libssl-dev cmake cmake-curses-gui build-essential clang \
-    && apt clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Innstall packages
+RUN apt-get update \
+    && set -x \
+    && apt-get install -qq --no-install-recommends -y ca-certificates cmake cuda-core-9-0 git cuda-cudart-dev-9-0 libhwloc-dev libmicrohttpd-dev libssl-dev \
+    && git clone $GIT_REPOSITORY \
+    && cd /xmr-stak \
+    && cmake ${XMRSTAK_CMAKE_FLAGS} . \
+    && make \
+    && cd - \
+    && mv /xmr-stak/bin/* /usr/local/bin/ \
+    && rm -rf /xmr-stak \
+    && apt-get purge -y -qq cmake cuda-core-9-0 git cuda-cudart-dev-9-0 libhwloc-dev libmicrohttpd-dev libssl-dev \
+    && apt-get clean -qq
 
-RUN cd /tmp && \
-    git clone https://github.com/fireice-uk/xmr-stak-nvidia.git src && \
-    cd src && \
-    cmake . -DCMAKE_INSTALL_PREFIX=/usr && \
-    make install
-
-ADD config.nvidia /config/config.txt
-ADD sigint.sh /usr/bin/xmr-stak-sigint
+ADD config.xmr /config/config.txt
+ADD sigint.sh /usr/local/bin/xmr-stak-sigint
 
 WORKDIR /config
 
-CMD [ "/usr/bin/xmr-stak-nvidia" ]
+ENTRYPOINT [ "/usr/local/bin/xmr-stak-sigint" ]
 

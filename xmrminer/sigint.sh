@@ -9,4 +9,4 @@ trap "echo 'Killed by user action. Exiting gracefully'; exit 0" SIGHUP SIGINT SI
   exit 0
 }
 
-/usr/bin/xmr-stak-${VERSION}
+/usr/local/bin/xmr-stak

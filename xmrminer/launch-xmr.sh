@@ -12,6 +12,5 @@ docker run -it \
   --device /dev/nvidiactl:/dev/nvidiactl \
   --device /dev/nvidia-modeset:/dev/nvidia-modeset \
   --device /dev/nvidia-uvm:/dev/nvidia-uvm \
-  -v $PWD/config.2nvidia:/config/config.txt \
-  samnco/xmrminer:0.1.5-nvidia \
-  /usr/bin/xmr-stak-nvidia
+  -v $PWD/config.xmr:/config/config.txt \
+  samnco/xmrminer:2.2.0-nvidia

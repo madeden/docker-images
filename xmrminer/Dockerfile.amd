@@ -1,10 +1,12 @@
 FROM ubuntu:16.04
 
-ENV VERSION=amd
+ENV AMD_DRIVER=amdgpu-pro-17.50-511655
+ENV AMD_APP_SDK=AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64
 
 RUN apt update && apt upgrade -yqq && \
     apt install -yqq --no-install-recommends \
       ocl-icd-opencl-dev \
+      libhwloc-dev \
       libmicrohttpd-dev \
       libssl-dev \
       cmake \
@@ -18,18 +20,18 @@ RUN apt update && apt upgrade -yqq && \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY amdgpu-pro-17.30-458935.tar.xz /tmp/amdgpu-pro-17.30-458935.tar.xz
+COPY ${AMD_DRIVER}.tar.xz /tmp/${AMD_DRIVER}.tar.xz
 
 RUN cd /tmp && \
-    tar -Jxvf amdgpu-pro-17.30-458935.tar.xz && \
-    rm -f amdgpu-pro-17.30-458935.tar.xz && \
-    cd amdgpu-pro-17.30-458935 && \
+    tar -Jxvf ${AMD_DRIVER}.tar.xz && \
+    rm -f ${AMD_DRIVER}.tar.xz && \
+    cd ${AMD_DRIVER} && \
     ./amdgpu-pro-install -y --compute
 
-COPY AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2 /tmp/AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
+COPY ${AMD_APP_SDK}.tar.bz2 /tmp/${AMD_APP_SDK}.tar.bz2
 
 RUN cd /tmp && \
-    tar -xvf AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2 && \
+    tar -xvf ${AMD_APP_SDK}.tar.bz2 && \
     rm AMD-APP-SDK*.tar.bz2 && \
     ./AMD-APP-SDK-*.sh -- --acceptEULA 'yes' -s && \
     rm AMD-APP-SDK-*.sh && \
@@ -39,21 +41,37 @@ RUN cd /tmp && \
 #RUN ln -s /opt/AMDAPPSDK-3.0/include/CL /usr/include/ && \
 #    ln -s /opt/AMDAPPSDK-3.0/lib/x86_64/libOpenCL.so.1 /usr/lib/libOpenCL.so
 
-RUN cd / && \
-    git clone https://github.com/fireice-uk/xmr-stak-amd.git && \
-    cd xmr-stak-amd && \
-    cmake . -DCMAKE_INSTALL_PREFIX=/usr && \
-    make
+# Default git repository
+ENV GIT_REPOSITORY https://github.com/fireice-uk/xmr-stak.git
+ENV XMRSTAK_CMAKE_FLAGS -DXMR-STAK_COMPILE=generic -DCUDA_ENABLE=OFF -DOpenCL_ENABLE=ON
 
-ADD config.amd /config/config.txt
-ADD config.amd /xmr-stak-amd/config.txt
-ADD entrypoint.sh /usr/bin/xmr-stak-amd
-ADD sigint.sh /usr/bin/xmr-stak-sigint
-
-WORKDIR /config
+# Install packages
+RUN git clone $GIT_REPOSITORY \
+    && cd /xmr-stak \
+    && cmake ${XMRSTAK_CMAKE_FLAGS} . \
+    && make \
+    && cd - \
+    && mv /xmr-stak/bin/* /usr/local/bin/ \
+    && rm -rf /xmr-stak \
+    && apt purge -yqq \
+      libhwloc-dev \
+      libmicrohttpd-dev \
+      libssl-dev \
+      cmake \
+      git \
+      wget \
+      ca-certificates \
+      build-essential \
+      xz-utils \
+      bzip2 \
+      lsb-release \
+    && apt clean -yqq
 
 ENV PATH "$PATH:/opt/amdgpupro/bin:/opt/AMDAPPSDK-3.0/bin/"
 ENV LD_LIBRARY_PATH "$LD_LIBRARY_PATH:/opt/amdgpu-pro/lib:/usr/lib/x86_64-linux-gnu"
 
-CMD [ "/usr/bin/xmr-stak-amd" ]
+WORKDIR /config
+ADD config.xmr /config/config.txt
+ADD sigint.sh /usr/local/bin/xmr-stak-sigint
 
+ENTRYPOINT [ "/usr/local/bin/xmr-stak-sigint" ]

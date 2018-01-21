@@ -29,7 +29,7 @@ docker run --rm -it \
   --device /dev/nvidia-uvm:/dev/nvidia-uvm \
   -v $PWD/input-images:/in \
   -v $PWD/output-openalpr:/out \
-  samnco/openalpr:latest-3.3.1-16.04-cuda \
+  samnco/openalpr:latest-3.3.1-16.04-cuda-2 \
   openalpr-utils-benchmark us speed /in /out
 ```
 
